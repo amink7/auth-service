@@ -3,20 +3,20 @@ package com.cybersecurity.auth_service.controller;
 import com.cybersecurity.auth_service.model.Usuario;
 import com.cybersecurity.auth_service.service.UsuarioService;
 import com.cybersecurity.auth_service.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    // ✅ Inyección por constructor
+    public UsuarioController(UsuarioService usuarioService, JwtUtil jwtUtil) {
+        this.usuarioService = usuarioService;
+        this.jwtUtil = jwtUtil;
+    }
 
     @PostMapping("/registrar")
     public String registrarUsuario(@RequestBody Usuario usuario) {

@@ -2,6 +2,7 @@ package com.cybersecurity.auth_service.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -9,8 +10,13 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET = "12345678901234567890123456789012"; // mínimo 32 caracteres
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+
+    private final Key key;
+
+    // Inyecta el secret desde el properties
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(String username) {
         return Jwts.builder()
@@ -35,4 +41,3 @@ public class JwtUtil {
                 .parseClaimsJws(token).getBody().getSubject();
     }
 }
-

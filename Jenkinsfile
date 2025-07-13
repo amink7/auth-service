@@ -3,16 +3,10 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "amk77/auth-service:latest"
-        DOCKER_CREDENTIALS_ID = "dockerhub-credentials" // ID de tus credenciales en Jenkins
+        DOCKER_CREDENTIALS_ID = "dockerhub-credentials"
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'master', url: 'https://github.com/amink7/auth-service.git'
-            }
-        }
-
         stage('Build & Test') {
             steps {
                 sh 'mvn clean install'
@@ -21,7 +15,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             environment {
-                SONARQUBE_ENV = 'SonarQube' // Nombre del SonarQube server en Jenkins
+                SONARQUBE_ENV = 'SonarQube'
             }
             steps {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {

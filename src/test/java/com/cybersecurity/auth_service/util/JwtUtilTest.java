@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JwtUtilTest {
 
-    private final JwtUtil jwtUtil = new JwtUtil();
+    // Usa el mismo secret que en application.properties (mínimo 32 caracteres)
+    private static final String TEST_SECRET = "12345678901234567890123456789012";
+    private final JwtUtil jwtUtil = new JwtUtil(TEST_SECRET);
 
     @Test
     void generateToken_y_validateToken_funciona() {
@@ -23,9 +25,10 @@ class JwtUtilTest {
 
     @Test
     void getUsernameFromToken_tokenCorrupto_lanzaExcepcion() {
-        JwtUtil localJwtUtil = new JwtUtil();
+        JwtUtil localJwtUtil = new JwtUtil(TEST_SECRET);
         assertThrows(Exception.class, () -> {
             localJwtUtil.getUsernameFromToken("abcdefg.invalid.token");
         });
     }
 }
+

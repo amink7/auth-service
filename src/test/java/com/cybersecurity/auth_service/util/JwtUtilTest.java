@@ -23,10 +23,9 @@ class JwtUtilTest {
 
     @Test
     void getUsernameFromToken_tokenCorrupto_lanzaExcepcion() {
-        JwtUtil jwtUtil = new JwtUtil();
+        JwtUtil localJwtUtil = new JwtUtil();
         assertThrows(Exception.class, () -> {
-            jwtUtil.getUsernameFromToken("abcdefg.invalid.token");
+            localJwtUtil.getUsernameFromToken("abcdefg.invalid.token");
         });
     }
-
 }

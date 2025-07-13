@@ -1,13 +1,9 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven 3.8.4'    // ⚠️ Usa el nombre exacto que configuraste en Jenkins → Global Tool Configuration
-    }
-
     environment {
-        SONARQUBE = 'SonarQube'                 // Nombre que pusiste en Jenkins → Configure System → SonarQube servers
-        DOCKER_IMAGE = 'amk77/auth-service'     // Tu repo en DockerHub
+        DOCKER_IMAGE = "amk77/auth-service:latest"
+        DOCKER_CREDENTIALS_ID = "dockerhub-credentials" // ID de tus credenciales en Jenkins
     }
 
     stages {
@@ -19,32 +15,34 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean install'
             }
         }
 
         stage('SonarQube Analysis') {
+            environment {
+                SONARQUBE_ENV = 'SonarQube' // Nombre del SonarQube server en Jenkins
+            }
             steps {
-                withSonarQubeEnv("${SONARQUBE}") {
-                    sh 'mvn verify sonar:sonar -Dsonar.projectKey=auth-service'
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE:latest .'
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
         stage('Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push $DOCKER_IMAGE:latest
-                        docker logout
-                    '''
+                        docker push ${DOCKER_IMAGE}
+                    """
                 }
             }
         }

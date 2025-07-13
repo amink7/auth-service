@@ -1,10 +1,14 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven3'   // Usa el nombre que hayas configurado en Global Tool Configuration
+        jdk 'JDK17'      // Igual, usa el nombre que hayas configurado
+    }
+
     environment {
-        DOCKER_IMAGE = 'amk77/auth-service:latest'
-        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'  // ⚠️ Tu ID de credenciales en Jenkins
-        SONARQUBE_ENV = 'SonarQube'  // ⚠️ Nombre de tu servidor Sonar configurado en Jenkins
+        SONARQUBE_ENV = 'SonarQube'    // Nombre que diste en Jenkins > Configure System > SonarQube servers
+        DOCKER_IMAGE = 'amk77/auth-service'
     }
 
     stages {
@@ -36,9 +40,9 @@ pipeline {
 
         stage('Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat """
-                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
                         docker push %DOCKER_IMAGE%
                     """
                 }

@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'git@github.com:amink7/auth-service.git'
+                git branch: 'master', url: 'https://github.com/amink7/auth-service.git'
             }
         }
 

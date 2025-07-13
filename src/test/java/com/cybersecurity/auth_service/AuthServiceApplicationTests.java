@@ -11,6 +11,7 @@ class AuthServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// Si arranca el contexto, el test pasa
 	}
 
 }
